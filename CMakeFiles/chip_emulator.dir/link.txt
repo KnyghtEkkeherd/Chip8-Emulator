@@ -1,1 +1,0 @@
-/usr/bin/cc  -O3 -Wall -Wl,--dependency-file=CMakeFiles/chip_emulator.dir/link.d CMakeFiles/chip_emulator.dir/src/main.c.o -o chip_emulator

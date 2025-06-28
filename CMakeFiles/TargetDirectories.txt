@@ -1,3 +1,0 @@
-/home/wiktor/Code/chip_emulator/CMakeFiles/chip_emulator.dir
-/home/wiktor/Code/chip_emulator/CMakeFiles/edit_cache.dir
-/home/wiktor/Code/chip_emulator/CMakeFiles/rebuild_cache.dir
