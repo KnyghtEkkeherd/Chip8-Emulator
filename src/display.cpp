@@ -1,6 +1,11 @@
 #include "include/display.h"
+#include "include/hardware_const.h"
+#include <cstdlib>
+#include <iostream>
 
-Display::Display(RAM& ram): font_start_idx(0x050), pixel("█"){
+Display::Display(RAM& ram): font_start_idx(0x050), pixel("■"){
+
+    // load the font into the memory
     u_int16_t font[] = {0xF0, 0x90, 0x90, 0x90, 0xF0,
     0x20, 0x60, 0x20, 0x20, 0x70,
     0xF0, 0x10, 0xF0, 0x80, 0xF0,
@@ -20,5 +25,19 @@ Display::Display(RAM& ram): font_start_idx(0x050), pixel("█"){
 
     for (u_int16_t i=0; i<sizeof(font)/sizeof(u_int16_t); ++i){
         ram.write_address(font_start_idx+i, font[i]);
+    }
+
+    // reset the display window
+    std::system("clear");
+    window.reset();
+    update_window();
+}
+
+void Display::update_window(){
+    for (int y=0; y<DISP_HEIGHT; ++y){
+        for (int x=0; x<DISP_WIDTH; ++x){
+            std::cout << (window[x + y] ? pixel: " ");
+        }
+        std::cout << std::endl;
     }
 }
