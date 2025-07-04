@@ -1,7 +1,9 @@
 #include "include/display.h"
 #include "include/hardware_const.h"
+#include <bitset>
 #include <cstdlib>
 #include <iostream>
+#include <sys/types.h>
 
 Display::Display(RAM& ram): font_start_idx(0x050), pixel("■"){
 
@@ -33,10 +35,22 @@ Display::Display(RAM& ram): font_start_idx(0x050), pixel("■"){
     update_window();
 }
 
+void Display::clear_screen(){
+    window.reset();
+}
+
+bool Display::get_pixel(u_int16_t x_coord, u_int16_t y_coord){
+    return window[DISP_WIDTH*y_coord + x_coord];
+}
+
+void Display::set_pixel(u_int16_t x_coord, u_int16_t y_coord, bool value){
+    window[DISP_WIDTH*y_coord + x_coord] = value;
+}
+
 void Display::update_window(){
     for (int y=0; y<DISP_HEIGHT; ++y){
         for (int x=0; x<DISP_WIDTH; ++x){
-            std::cout << (window[x + y] ? pixel: " ");
+            std::cout << (window[x + y] ? pixel: ".");
         }
         std::cout << std::endl;
     }

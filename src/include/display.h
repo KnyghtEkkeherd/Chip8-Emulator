@@ -16,12 +16,11 @@ class Display{
   std::bitset<DISP_HEIGHT * DISP_WIDTH> window;
   std::string pixel;
 
-  int draw_character(char character);
-  int clear_line();
-  int clear_screen();
-
   public:
   Display(RAM& ram);
+  void clear_screen();
+  bool get_pixel(u_int16_t x_coord, u_int16_t y_coord);
+  void set_pixel(u_int16_t x_coord, u_int16_t y_coord, bool value);
   void update_window();
 };
 
