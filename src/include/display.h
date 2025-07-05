@@ -20,7 +20,7 @@ class Display{
   Display(RAM& ram);
   void clear_screen();
   bool get_pixel(u_int16_t x_coord, u_int16_t y_coord);
-  void set_pixel(u_int16_t x_coord, u_int16_t y_coord, bool value);
+  void flip_pixel(u_int16_t x_coord, u_int16_t y_coord);
   void update_window();
 };
 

@@ -3,6 +3,8 @@
 #include <bitset>
 #include <cstdlib>
 #include <iostream>
+#include <ostream>
+#include <string>
 #include <sys/types.h>
 
 Display::Display(RAM& ram): font_start_idx(0x050), pixel("■"){
@@ -43,15 +45,21 @@ bool Display::get_pixel(u_int16_t x_coord, u_int16_t y_coord){
     return window[DISP_WIDTH*y_coord + x_coord];
 }
 
-void Display::set_pixel(u_int16_t x_coord, u_int16_t y_coord, bool value){
-    window[DISP_WIDTH*y_coord + x_coord] = value;
+void Display::flip_pixel(u_int16_t x_coord, u_int16_t y_coord){
+    window[DISP_WIDTH*y_coord + x_coord] = !window[DISP_WIDTH*y_coord + x_coord];
 }
 
 void Display::update_window(){
-    for (int y=0; y<DISP_HEIGHT; ++y){
-        for (int x=0; x<DISP_WIDTH; ++x){
-            std::cout << (window[x + y] ? pixel: ".");
+    std::string window_str = window.to_string();
+
+    for (int y=0; y<DISP_HEIGHT; y++){
+        for (int x=0; x<DISP_WIDTH; x++){
+            if (window_str[y*DISP_WIDTH + x] == '1'){
+                std::cout << pixel;
+            }else{
+                std::cout << ' ';
+            }
         }
-        std::cout << std::endl;
+        std::cout<<std::endl;
     }
 }

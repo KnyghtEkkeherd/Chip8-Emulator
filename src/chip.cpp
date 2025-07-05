@@ -74,36 +74,38 @@ void Chip::decode(){
 
         case 0xD000:
         V_reg[0xF] = 0; // VF flag register
-        for (u_int16_t row=0; row < N; ++row){
-            // handle clipping
-            if (y_coord + row >= DISP_HEIGHT){
-                break;
-            }
+        for (u_int16_t row=0; row < N; row++){
             std::bitset<8> sprite_data(ram.read_address(I_reg + row));
-            for (int col=0; col < 8; ++col){
+            for (u_int16_t col=0; col < 8; col++){
                 // bitset represents low indexes to be the lowest bits but
                 // sprites have to be drawn from most significant to least significant
 
+                //std::cout << "Sprite: " << sprite_data[7-col] << " | " << "Window:" << display.get_pixel(x_coord, y_coord)<< std::endl;
+                if (display.get_pixel(x_coord, y_coord) && sprite_data[7-col]){
+                    V_reg[0xF] = 1;
+                    display.flip_pixel(x_coord, y_coord);
+                }
+                else if( (!display.get_pixel(x_coord, y_coord)) && sprite_data[7-col]){
+                    display.flip_pixel(x_coord, y_coord);
+                }
                 // handle clipping
-                if (x_coord + col >= DISP_WIDTH){
+                if (x_coord >= DISP_WIDTH-1){
                     break;
                 }
-
-                if (display.get_pixel(x_coord, y_coord) == sprite_data[7-col]){
-                    V_reg[0xF] = 1;
-                    display.set_pixel(x_coord, y_coord, false);
-                }
-                else if(!display.get_pixel(x_coord, y_coord) && sprite_data[7-col]){
-                    display.set_pixel(x_coord, y_coord, true);
-                }
-                X++;
+                x_coord++;
             }
-            Y++;
+            // handle clipping
+            if (y_coord >= DISP_HEIGHT-1){
+                break;
+            }
+            y_coord++;
         }
+
         display.update_window();
         break;
         default:
         std::cout << "Uknown Command!" << std::endl;
+        break;
     }
 }
 
@@ -132,4 +134,5 @@ void Chip::load_rom(std::string file_path){
         mem_address++;
     }
     file.close();
+    std::cout << "ROM file: " << file_path << " loaded successfuly!" << std::endl;
 }
