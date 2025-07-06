@@ -42,16 +42,15 @@ void Display::clear_screen(){
 }
 
 bool Display::get_pixel(u_int16_t x_coord, u_int16_t y_coord){
-    return window[DISP_WIDTH*y_coord + x_coord];
+    return window[DISP_HEIGHT*DISP_WIDTH - (DISP_WIDTH*y_coord + x_coord)];
 }
 
 void Display::flip_pixel(u_int16_t x_coord, u_int16_t y_coord){
-    window[DISP_WIDTH*y_coord + x_coord] = !window[DISP_WIDTH*y_coord + x_coord];
+    window[DISP_HEIGHT*DISP_WIDTH - (DISP_WIDTH*y_coord + x_coord)] = !window[DISP_HEIGHT*DISP_WIDTH - (DISP_WIDTH*y_coord + x_coord)];
 }
 
 void Display::update_window(){
     std::string window_str = window.to_string();
-
     for (int y=0; y<DISP_HEIGHT; y++){
         for (int x=0; x<DISP_WIDTH; x++){
             if (window_str[y*DISP_WIDTH + x] == '1'){

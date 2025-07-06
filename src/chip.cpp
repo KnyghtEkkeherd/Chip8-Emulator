@@ -81,11 +81,11 @@ void Chip::decode(){
                 // sprites have to be drawn from most significant to least significant
 
                 //std::cout << "Sprite: " << sprite_data[7-col] << " | " << "Window:" << display.get_pixel(x_coord, y_coord)<< std::endl;
-                if (display.get_pixel(x_coord, y_coord) && sprite_data[7-col]){
+                if (display.get_pixel(x_coord, y_coord) && sprite_data[col]){
                     V_reg[0xF] = 1;
                     display.flip_pixel(x_coord, y_coord);
                 }
-                else if( (!display.get_pixel(x_coord, y_coord)) && sprite_data[7-col]){
+                else if( (!display.get_pixel(x_coord, y_coord)) && sprite_data[col]){
                     display.flip_pixel(x_coord, y_coord);
                 }
                 // handle clipping
