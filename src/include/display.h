@@ -13,7 +13,7 @@ class Display{
   private:
   u_int16_t font_start_idx;
   u_int16_t font[16][5];
-  std::bitset<DISP_HEIGHT * DISP_WIDTH> window;
+  int window[DISP_HEIGHT][DISP_WIDTH];
   std::string pixel;
 
   public:

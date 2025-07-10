@@ -30,6 +30,7 @@ class Chip {
   Chip();
   void run();
   void load_rom(std::string file_path);
+  void display_memory();
 };
 
 

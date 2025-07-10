@@ -6,8 +6,9 @@
 #include <iostream>
 #include <string>
 #include <sys/types.h>
+#include <iomanip>
 
-Chip::Chip(): PC(0x200), I_reg(0x000), delay_timer(0), sound_timer(0), instruction(0x00), display(ram){
+Chip::Chip(): PC(0x200), I_reg(0), delay_timer(0), sound_timer(0), instruction(0), display(ram){
     for (int i=0; i<16; ++i){
         V_reg[i] = 0;
     }
@@ -51,25 +52,21 @@ void Chip::decode(){
         case 0x1000:
         // jump
         PC = NNN;
-        //std::cout << "Setting PC: " << PC << std::endl;
         break;
 
         case 0x6000:
         // set register VX
         V_reg[X] = NN;
-        //std::cout << "Setting V" << X << ": " << NN << std::endl;
         break;
 
         case 0x7000:
         // add value to register VX
         V_reg[X] += NN;
-        //std::cout << "Adding value to V" << X << ": " << NN << std::endl;
         break;
 
         case 0xA000:
         // set index register I
         I_reg = NNN;
-        //std::cout << "Setting I: " << NNN << std::endl;
         break;
 
         case 0xD000:
@@ -77,32 +74,26 @@ void Chip::decode(){
         for (u_int16_t row=0; row < N; row++){
             std::bitset<8> sprite_data(ram.read_address(I_reg + row));
             for (u_int16_t col=0; col < 8; col++){
-                // bitset represents low indexes to be the lowest bits but
-                // sprites have to be drawn from most significant to least significant
-
-                //std::cout << "Sprite: " << sprite_data[7-col] << " | " << "Window:" << display.get_pixel(x_coord, y_coord)<< std::endl;
-                if (display.get_pixel(x_coord, y_coord) && sprite_data[col]){
+                if (display.get_pixel(x_coord, y_coord) == 1 && sprite_data[col] == 1){
                     V_reg[0xF] = 1;
                     display.flip_pixel(x_coord, y_coord);
                 }
-                else if( (!display.get_pixel(x_coord, y_coord)) && sprite_data[col]){
+                else if( (display.get_pixel(x_coord, y_coord)) == 0 && sprite_data[col] == 1){
                     display.flip_pixel(x_coord, y_coord);
                 }
-                // handle clipping
                 if (x_coord >= DISP_WIDTH-1){
                     break;
                 }
                 x_coord++;
             }
-            // handle clipping
+            y_coord++;
             if (y_coord >= DISP_HEIGHT-1){
                 break;
             }
-            y_coord++;
         }
-
         display.update_window();
         break;
+
         default:
         std::cout << "Uknown Command!" << std::endl;
         break;
@@ -135,4 +126,19 @@ void Chip::load_rom(std::string file_path){
     }
     file.close();
     std::cout << "ROM file: " << file_path << " loaded successfuly!" << std::endl;
+}
+
+void Chip::display_memory(){
+    std::cout << "Address\tValue\tAddress\tValue\tAddress\tValue\tAddress\tValue" << std::endl; // Header
+
+    for (uint16_t address = 0x000; address < 0xfff; address += 4) {
+        std::cout << std::hex << address << '\t'
+                  << static_cast<int>(ram.read_address(address)) << '\t'
+                  << std::hex << (address + 1) << '\t'
+                  << static_cast<int>(ram.read_address(address + 1)) << '\t'
+                  << std::hex << (address + 2) << '\t'
+                  << static_cast<int>(ram.read_address(address + 2)) << '\t'
+                  << std::hex << (address + 3) << '\t'
+                  << static_cast<int>(ram.read_address(address + 3)) << std::endl;
+    }
 }

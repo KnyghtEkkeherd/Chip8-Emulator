@@ -1,6 +1,5 @@
 #include "include/ram.h"
 #include "include/hardware_const.h"
-#include <bitset>
 #include <iostream>
 #include <ostream>
 #include <sys/types.h>
@@ -11,27 +10,12 @@ RAM::RAM(){
   }
 }
 
-bool RAM::verify_address(u_int16_t address){
-    return (address < RAM_SIZE && address >= 0);
-}
-
 u_int8_t RAM::read_address(u_int16_t address){
-    if (verify_address(address)){
-        return memory[address];
-    }
-
-    std::cerr << "Address outside bounds" << std::endl;
-    return 0;
+    return memory[address];
 }
 
-int RAM::write_address(u_int16_t address, u_int8_t data){
-    if (verify_address(address)){
-        memory[address] = data;
-        return 0;
-    }
-
-    std::cerr << "Address outside bounds" << std::endl;
-    return -1;
+void RAM::write_address(u_int16_t address, u_int8_t data){
+    memory[address] = data;
 }
 
 void RAM::print_ram(){
