@@ -88,7 +88,7 @@ $(BUILD_DIR)/%.o: $(IMGUI_DIR)/backends/%.cpp
 all: $(BUILD_DIR)/$(EXE)
 
 $(BUILD_DIR)/$(EXE): $(OBJS)
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
+	$(CXX) -g -o $@ $^ $(CXXFLAGS) $(LIBS)
 	@echo Build complete for $(ECHO_MESSAGE)
 
 clean:
