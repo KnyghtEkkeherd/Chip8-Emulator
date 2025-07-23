@@ -175,7 +175,7 @@ int main(int, char**)
 
             // Setting the font
             ImGuiIO& io = ImGui::GetIO();
-            io.Fonts->AddFontFromFileTTF("/home/wiktor/Code/ChipEmulator/misc/fonts/OpenSans-Regular.ttf", 34);
+            io.Fonts->AddFontFromFileTTF("./fonts/OpenSans-Regular.ttf", 34);
             chip.run();
 
             ImGui::End();
