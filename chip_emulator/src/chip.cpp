@@ -5,7 +5,7 @@
 
 using namespace ChipEmulator;
 
-Chip::Chip(): PC(0x200), I_reg(0), delay_timer(0), sound_timer(0), instruction(0), display(ram){
+Chip::Chip(): PC(0x200), I_reg(0), delay_timer(0), sound_timer(0), instruction(0), display(ram, DISP_WIDTH, DISP_HEIGHT){
     for (int i=0; i<16; ++i){
         V_reg[i] = 0;
     }
@@ -43,7 +43,9 @@ void Chip::decode(){
         case 0x0000:
         // clear screen
         display.clear_screen();
-        display.update_window();
+
+        // for console printing
+        //display.update_window();
         break;
 
         case 0x1000:
@@ -88,7 +90,8 @@ void Chip::decode(){
                 break;
             }
         }
-        display.update_window();
+        // for console printing
+        //display.update_window();
         break;
 
         default:
@@ -97,9 +100,12 @@ void Chip::decode(){
     }
 }
 
-void Chip::run(){
+const int** Chip::run(){
     fetch();
     decode();
+
+    // returns the display array pointer
+    return display.get_window();
 }
 
 void Chip::load_rom(std::string file_path){
@@ -138,4 +144,12 @@ void Chip::display_memory(){
                   << std::hex << (address + 3) << '\t'
                   << static_cast<int>(ram.read_address(address + 3)) << std::endl;
     }
+}
+
+int Chip::get_display_width() const{
+    return display.get_display_width();
+}
+
+int Chip::get_display_height() const{
+    return display.get_display_height();
 }

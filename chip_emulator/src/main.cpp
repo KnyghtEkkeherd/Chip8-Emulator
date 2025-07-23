@@ -38,10 +38,23 @@ static void glfw_error_callback(int error, const char* description)
 
 // Chip 8 emulator object
 static ChipEmulator::Chip chip;
+const int width = 64;  // Width of the display
+const int height = 32; // Height of the display
+const float pixelSize = 20.0f; // Size of each pixel
+const int** display_array;
 
 // Main code
 int main(int, char**)
 {
+    /*
+     * Emulator ROM settings
+     */
+
+     chip.load_rom("roms/2-ibm-logo.ch8");
+
+    /*
+     * ImGUI code
+     */
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
@@ -77,7 +90,7 @@ int main(int, char**)
 
     // Create window with graphics context
     float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor()); // Valid on GLFW 3.3+ only
-    GLFWwindow* window = glfwCreateWindow((int)(1280 * main_scale), (int)(800 * main_scale), "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow((int)(1280 * main_scale), (int)(800 * main_scale), "Chip8 Emulator", nullptr, nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
@@ -170,13 +183,26 @@ int main(int, char**)
 
         // GUI code
         {
-            ImGui::Begin("CHIP8 Emulator");
-            ImGuiStyle& style = ImGui::GetStyle();
+            ImGui::SetNextWindowPos(ImVec2(0, 0));
+            ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
+            ImGui::Begin("Display", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+                        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
+                        ImGuiWindowFlags_NoCollapse);
 
-            // Setting the font
-            ImGuiIO& io = ImGui::GetIO();
-            io.Fonts->AddFontFromFileTTF("./fonts/OpenSans-Regular.ttf", 34);
-            chip.run();
+            // Draw the 2D array of ones
+            ImDrawList* draw_list = ImGui::GetWindowDrawList();
+            ImVec2 window_pos = ImGui::GetCursorScreenPos();
+            display_array = chip.run();
+
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    if (display_array[y][x] == 1) { // If the pixel is on
+                        float pixel_x = window_pos.x + (x * pixelSize);
+                        float pixel_y = window_pos.y + (y * pixelSize);
+                        draw_list->AddRectFilled(ImVec2(pixel_x, pixel_y), ImVec2(pixel_x + pixelSize, pixel_y + pixelSize), IM_COL32(255, 255, 255, 255));
+                    }
+                }
+            }
 
             ImGui::End();
         }

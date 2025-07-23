@@ -11,6 +11,7 @@
 #include <fstream>
 
 namespace ChipEmulator{
+
     class Chip {
       RAM ram;
       Display display;
@@ -25,11 +26,14 @@ namespace ChipEmulator{
       // Compute loop
       void fetch();
       void decode();
+
       public:
       Chip();
-      void run();
+      const int** run();
       void load_rom(std::string file_path);
       void display_memory();
+      int get_display_width() const;
+      int get_display_height() const;
     };
 }
 
