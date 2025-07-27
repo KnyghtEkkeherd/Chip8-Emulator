@@ -29,29 +29,23 @@ Display::Display(RAM& ram, int height, int width): height(height), width(width),
         ram.write_address(font_start_idx+i, font[i]);
     }
 
-    window = new int*[height];
-    for (int i=0; i < height; ++i){
-        window[i] = new int[width];
-    }
+    window = new int[height];
 }
 
 Display::~Display(){
-    for (int i=0; i<height; ++i){
-        delete[] window[i];
-    }
     delete[] window;
 }
 
 void Display::clear_screen(){
-    for (int row=0; row<height; row++){
-        for (int col=0; col<width; col++){
-            window[row][col] = 0;
+    for (int y=0; y<height; y++){
+        for (int x=0; x<width; x++){
+            window[y*width + x] = 0;
         }
     }
 }
 
-bool Display::get_pixel(u_int16_t x_coord, u_int16_t y_coord) const{
-    return window[y_coord][x_coord];
+bool Display::get_pixel(u_int16_t x, u_int16_t y) const{
+    return window[y*width + x];
 }
 
 int Display::get_display_width() const{
@@ -62,21 +56,10 @@ int Display::get_display_height() const{
     return height;
 }
 
-void Display::flip_pixel(u_int16_t x_coord, u_int16_t y_coord){
-    window[y_coord][x_coord] = !window[y_coord][x_coord];
+void Display::flip_pixel(u_int16_t x, u_int16_t y){
+    window[y*width + x] = !window[y*width + x];
 }
 
-void Display::update_window(){
-    // for printing in the console without GUI
-    for (int row=0; row<height; row++){
-        for (int col=0; col<width; col++){
-            std::cout << (window[row][col] ? pixel: ".");
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-const int** Display::get_window() const {
-    return const_cast<const int**>(window);
+const int* Display::get_window() const {
+    return const_cast<const int*>(window);
 }

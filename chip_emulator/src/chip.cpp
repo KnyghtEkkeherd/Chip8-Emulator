@@ -43,9 +43,6 @@ void Chip::decode(){
         case 0x0000:
         // clear screen
         display.clear_screen();
-
-        // for console printing
-        //display.update_window();
         break;
 
         case 0x1000:
@@ -100,12 +97,9 @@ void Chip::decode(){
     }
 }
 
-const int** Chip::run(){
+void Chip::run(){
     fetch();
     decode();
-
-    // returns the display array pointer
-    return display.get_window();
 }
 
 void Chip::load_rom(std::string file_path){
@@ -152,4 +146,8 @@ int Chip::get_display_width() const{
 
 int Chip::get_display_height() const{
     return display.get_display_height();
+}
+
+const int* Chip::get_display_window() const{
+    return display.get_window();
 }

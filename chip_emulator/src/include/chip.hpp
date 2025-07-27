@@ -29,11 +29,12 @@ namespace ChipEmulator{
 
       public:
       Chip();
-      const int** run();
+      void run();
       void load_rom(std::string file_path);
       void display_memory();
       int get_display_width() const;
       int get_display_height() const;
+      const int* get_display_window() const;
     };
 }
 
