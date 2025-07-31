@@ -1,11 +1,12 @@
 #include "include/chip.hpp"
 #include "include/display.hpp"
 #include "include/hardware_const.hpp"
+#include <iostream>
 #include <sys/types.h>
 
 using namespace ChipEmulator;
 
-Chip::Chip(): PC(0x200), I_reg(0), delay_timer(0), sound_timer(0), instruction(0), display(ram, DISP_WIDTH, DISP_HEIGHT){
+Chip::Chip(): PC(0x200), I_reg(0), delay_timer(0), sound_timer(0), instruction(0), display(ram, 64, 32){
     for (int i=0; i<16; ++i){
         V_reg[i] = 0;
     }
@@ -13,8 +14,7 @@ Chip::Chip(): PC(0x200), I_reg(0), delay_timer(0), sound_timer(0), instruction(0
 
 void Chip::fetch(){
     // each instruction is 2 bytes
-    instruction = (ram.read_address(PC) << 8);
-    instruction = ram.read_address(PC+1) | instruction;
+    instruction = ram.read_address(PC) | (ram.read_address(PC + 1) << 8);
     PC += 2;
 }
 
@@ -27,17 +27,15 @@ void Chip::decode(){
     u_int16_t NNN = instruction & 0x0FFF;
 
     // display draw
-    u_int16_t x_coord = V_reg[X] % DISP_WIDTH;
-    u_int16_t y_coord = V_reg[Y] % DISP_HEIGHT;
+    u_int16_t x_coord = V_reg[X] % display.get_display_width();
+    u_int16_t y_coord = V_reg[Y] % display.get_display_height();
 
-    /*
     std::cout << "Decoding: " << std::hex << instruction << std::endl;
     std::cout << "X: " << std::hex << X << std::endl;
     std::cout << "Y: " << std::hex << Y << std::endl;
     std::cout << "N: " << std::hex << N << std::endl;
     std::cout << "NN: " << std::hex << NN << std::endl;
     std::cout << "NNN: " << std::hex << NNN << std::endl;
-    */
 
     switch (instruction & 0xF000) {
         case 0x0000:
@@ -46,50 +44,35 @@ void Chip::decode(){
 
         // for console printing
         //display.update_window();
+        std::cout << "Clear screen" << std::endl;
         break;
 
         case 0x1000:
         // jump
         PC = NNN;
+        std::cout << "Jump" << std::endl;
         break;
 
         case 0x6000:
         // set register VX
         V_reg[X] = NN;
+        std::cout << "Setting V" << X << " to " << NN << std::endl;
         break;
 
         case 0x7000:
         // add value to register VX
         V_reg[X] += NN;
+        std::cout << "Adding " << NN << " to V" << X << std::endl;
         break;
 
         case 0xA000:
         // set index register I
         I_reg = NNN;
+        std::cout << "Setting Index Register to " << NNN << std::endl;
         break;
 
         case 0xD000:
-        V_reg[0xF] = 0; // VF flag register
-        for (u_int16_t row=0; row < N; row++){
-            std::bitset<8> sprite_data(ram.read_address(I_reg + row));
-            for (u_int16_t col=0; col < 8; col++){
-                if (display.get_pixel(x_coord, y_coord) == 1 && sprite_data[col] == 1){
-                    V_reg[0xF] = 1;
-                    display.flip_pixel(x_coord, y_coord);
-                }
-                else if( (display.get_pixel(x_coord, y_coord)) == 0 && sprite_data[col] == 1){
-                    display.flip_pixel(x_coord, y_coord);
-                }
-                if (x_coord >= DISP_WIDTH-1){
-                    break;
-                }
-                x_coord++;
-            }
-            y_coord++;
-            if (y_coord >= DISP_HEIGHT-1){
-                break;
-            }
-        }
+        draw(x_coord, y_coord, N);
         // for console printing
         //display.update_window();
         break;
@@ -98,13 +81,15 @@ void Chip::decode(){
         std::cout << "Uknown Command!" << std::endl;
         break;
     }
+    std::cout << "==========" << std::endl;
 }
 
-const int** Chip::run(){
+void Chip::run(){
     fetch();
     decode();
+}
 
-    // returns the display array pointer
+const int* Chip::get_window(){
     return display.get_window();
 }
 
@@ -152,4 +137,21 @@ int Chip::get_display_width() const{
 
 int Chip::get_display_height() const{
     return display.get_display_height();
+}
+
+void Chip::draw(u_int16_t x_coord, u_int16_t y_coord, u_int16_t sprite_size){
+    V_reg[0xF] = 0; // VF flag register
+    u_int8_t pixel;
+    for (u_int16_t yline = 0; yline < sprite_size; yline++){
+        pixel = ram.read_address(I_reg + yline);
+        for (u_int16_t xline = 0; xline < 8; xline++){
+            if ((pixel & (0x80 >> xline)) != 0){
+                if (display.get_pixel(x_coord + xline, y_coord + yline) == 1){
+                    V_reg[0xF] = 1;
+                    display.flip_pixel(x_coord + xline, y_coord + yline);
+                }
+            }
+        }
+    }
+    std::cout << "Drawing" << std::endl;
 }

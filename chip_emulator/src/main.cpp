@@ -41,7 +41,7 @@ static ChipEmulator::Chip chip;
 const int width = 64;  // Width of the display
 const int height = 32; // Height of the display
 const float pixelSize = 20.0f; // Size of each pixel
-const int** display_array;
+const int* display_array;
 
 // Main code
 int main(int, char**)
@@ -50,8 +50,8 @@ int main(int, char**)
      * Emulator ROM settings
      */
 
-     chip.load_rom("roms/2-ibm-logo.ch8");
-
+     chip.load_rom("roms/chip8_logo.ch8");
+     // get the display array address from the chip emulator
     /*
      * ImGUI code
      */
@@ -192,11 +192,13 @@ int main(int, char**)
             // Draw the 2D array of ones
             ImDrawList* draw_list = ImGui::GetWindowDrawList();
             ImVec2 window_pos = ImGui::GetCursorScreenPos();
-            display_array = chip.run();
+
+            // run the chip emulator and draw the display window
+            chip.run();
 
             for (int y = 0; y < height; ++y) {
                 for (int x = 0; x < width; ++x) {
-                    if (display_array[y][x] == 1) { // If the pixel is on
+                    if (chip.display.get_pixel(x, y)) { // If the pixel is on
                         float pixel_x = window_pos.x + (x * pixelSize);
                         float pixel_y = window_pos.y + (y * pixelSize);
                         draw_list->AddRectFilled(ImVec2(pixel_x, pixel_y), ImVec2(pixel_x + pixelSize, pixel_y + pixelSize), IM_COL32(255, 255, 255, 255));

@@ -14,7 +14,6 @@ namespace ChipEmulator{
 
     class Chip {
       RAM ram;
-      Display display;
       u_int16_t PC;
       u_int16_t I_reg;
       std::stack<u_int16_t> stack;
@@ -26,14 +25,17 @@ namespace ChipEmulator{
       // Compute loop
       void fetch();
       void decode();
+      void draw(u_int16_t x_coord, u_int16_t y_coord, u_int16_t sprite_size);
 
       public:
       Chip();
-      const int** run();
+      Display display;
+      void run();
       void load_rom(std::string file_path);
       void display_memory();
       int get_display_width() const;
       int get_display_height() const;
+      const int* get_window();
     };
 }
 
