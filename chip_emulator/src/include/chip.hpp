@@ -31,7 +31,7 @@ namespace ChipEmulator{
       Chip();
       Display display;
       void run();
-      void load_rom(std::string file_path);
+      void load_rom(const std::string file_path);
       void display_memory();
       int get_display_width() const;
       int get_display_height() const;
