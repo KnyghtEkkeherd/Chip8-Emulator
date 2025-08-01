@@ -3,6 +3,7 @@
 
 #include "ram.hpp"
 #include "display.hpp"
+#include "keyboard.hpp"
 #include <fstream>
 #include <stack>
 #include <string>
@@ -14,6 +15,7 @@ namespace ChipEmulator{
 
     class Chip {
       RAM ram;
+      Keyboard keyboard;
       u_int16_t PC;
       u_int16_t I_reg;
       std::stack<u_int16_t> stack;
@@ -31,6 +33,7 @@ namespace ChipEmulator{
       Chip();
       Display display;
       void run();
+      void update_timers();
       void load_rom(const std::string file_path);
       void display_memory();
       int get_display_width() const;

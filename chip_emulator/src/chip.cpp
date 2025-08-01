@@ -37,14 +37,12 @@ void Chip::decode(){
     u_int16_t x_coord = V_reg[X] % display.get_display_width();
     u_int16_t y_coord = V_reg[Y] % display.get_display_height();
 
-    /*
     std::cout << "Decoding: " << std::hex << instruction << std::endl;
     std::cout << "X: " << std::hex << X << std::endl;
     std::cout << "Y: " << std::hex << Y << std::endl;
     std::cout << "N: " << std::hex << N << std::endl;
     std::cout << "NN: " << std::hex << NN << std::endl;
     std::cout << "NNN: " << std::hex << NNN << std::endl;
-    */
 
     switch (instruction & 0xF000) {
         case 0x0000:
@@ -226,12 +224,12 @@ void Chip::decode(){
                     }
                     break;
                 default:
-                std::cout << "Command not implemented!" << std::endl;
+                std::cout << "Command not implemented!" << std::hex << instruction << std::endl;
             }
         break;
 
         default:
-        std::cout << "Uknown Command!" << std::endl;
+        std::cout << "Uknown opcode: " << std::hex << instruction << std::endl;
         break;
     }
 }
@@ -239,6 +237,17 @@ void Chip::decode(){
 void Chip::run(){
     fetch();
     decode();
+    update_timers();
+}
+
+void Chip::update_timers(){
+    if (delay_timer > 0)
+        delay_timer--;
+    if (sound_timer > 0){
+        if (sound_timer == 1)
+            std::cout << "BEEP" << std::endl;
+        sound_timer--;
+    }
 }
 
 const int* Chip::get_window(){

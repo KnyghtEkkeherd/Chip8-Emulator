@@ -50,7 +50,7 @@ int main(int, char**)
      * Emulator ROM settings
      */
 
-     chip.load_rom("roms/test_font.ch8");
+     chip.load_rom("roms/list_font.ch8");
     /*
      * ImGUI code
      */
