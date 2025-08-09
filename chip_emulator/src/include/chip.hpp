@@ -38,7 +38,6 @@ namespace ChipEmulator{
       void display_memory();
       int get_display_width() const;
       int get_display_height() const;
-      const int* get_window();
     };
 }
 

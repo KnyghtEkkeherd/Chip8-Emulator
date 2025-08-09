@@ -209,7 +209,7 @@ void Chip::decode(){
                 break;
 
                 case 0x29:
-                I_reg = display.get_font_idx() + V_reg[X];
+                I_reg = display.get_font_start_idx() + V_reg[X];
                 break;
 
                 // TODO: 0x33
@@ -248,10 +248,6 @@ void Chip::update_timers(){
             std::cout << "BEEP" << std::endl;
         sound_timer--;
     }
-}
-
-const int* Chip::get_window(){
-    return display.get_window();
 }
 
 void Chip::load_rom(const std::string file_path){

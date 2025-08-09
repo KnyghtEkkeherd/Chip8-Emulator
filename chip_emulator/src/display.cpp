@@ -52,28 +52,11 @@ int Display::get_display_height() const{
     return height;
 }
 
-u_int16_t Display::get_font_idx() const{
+u_int16_t Display::get_font_start_idx() const{
     return font_start_idx;
 }
 
 void Display::flip_pixel(u_int16_t x_coord, u_int16_t y_coord){
     window[x_coord + width*y_coord] ^= 1;
     std::cout << "Pixel flipped!" << std::endl;
-}
-
-void Display::set_pixel(u_int16_t x_coord, u_int16_t y_coord, bool value){
-    window[x_coord + width*y_coord] = value;
-}
-
-const int* Display::get_window() const {
-    return const_cast<const int*>(window);
-}
-
-void Display::print_window() const {
-    for (int y = 0; y < height; ++y){
-        for (int x = 0; x < width; ++x){
-            std::cout << (get_pixel(x, y) ? pixel: " ");
-        }
-        std::cout << std::endl;
-    }
 }
